@@ -131,33 +131,40 @@ export default function HomeScreen() {
       ) : (
         <>
           {location ? (
-            <MapView
-              ref={mapRef}
-              style={styles.map}
-              provider={PROVIDER_GOOGLE}
-              initialRegion={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-              showsUserLocation={true}
-              showsMyLocationButton={true}
-              followsUserLocation={true}
-            >
-              {nearbyVehicles.map((vehicle) => (
-                <Marker
-                  key={vehicle.id}
-                  coordinate={{
-                    latitude: vehicle.latitude,
-                    longitude: vehicle.longitude,
-                  }}
-                  title={vehicle.type === 'car' ? 'Electric Car' : 'Electric Bike'}
-                  description={`${vehicle.minutesAway} min away`}
-                  pinColor={vehicle.type === 'car' ? colors.secondary : colors.accent}
-                />
-              ))}
-            </MapView>
+            Platform.OS !== 'web' ? (
+              <MapView
+                ref={mapRef}
+                style={styles.map}
+                provider={PROVIDER_GOOGLE}
+                initialRegion={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+                showsUserLocation={true}
+                showsMyLocationButton={true}
+                followsUserLocation={true}
+              >
+                {nearbyVehicles.map((vehicle) => (
+                  <Marker
+                    key={vehicle.id}
+                    coordinate={{
+                      latitude: vehicle.latitude,
+                      longitude: vehicle.longitude,
+                    }}
+                    title={vehicle.type === 'car' ? 'Electric Car' : 'Electric Bike'}
+                    description={`${vehicle.minutesAway} min away`}
+                    pinColor={vehicle.type === 'car' ? colors.secondary : colors.accent}
+                  />
+                ))}
+              </MapView>
+            ) : (
+              <View style={[styles.map, styles.webMapPlaceholder]}>
+                <Text style={styles.webMapText}>Map view is not available on web platform</Text>
+                <Text style={styles.webMapSubtext}>Please use our mobile app for full functionality</Text>
+              </View>
+            )
           ) : (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{errorMsg || 'Unable to get location'}</Text>
@@ -475,5 +482,21 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Inter-Medium',
+  },
+  webMapPlaceholder: {
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  webMapText: {
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
+    color: '#212121',
+    marginBottom: 8,
+  },
+  webMapSubtext: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#757575',
   },
 });
